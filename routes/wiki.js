@@ -8,8 +8,16 @@ var User = models.User;
 module.exports = router;
 
 router.get('/', function(req, res, next){
-  res.redirect('/');
-});
+ 
+
+  Page.findAll()
+    .then(function(pages){
+      console.log(pages);
+      res.render("index", {pages});
+
+    });
+  
+  });
 
 router.post('/', function(req, res, next){
   console.log(req.body);
@@ -19,17 +27,29 @@ router.post('/', function(req, res, next){
     title: req.body.title,
     content: req.body.content
   });
-
-  page.save()
+   page.save()
     .then(function(){
-      res.json(page);
+      res.redirect(page.urlTitle);
     });
 
-  // res.send('got to POST');
+ 
 });
 
 router.get('/add', function(req, res, next){
   res.render('addpage');
+});
+
+router.get("/:urlTitle", function(req, res, next){
+  Page.findOne({ 
+    where: { 
+      urlTitle: req.params.urlTitle 
+    } 
+  })
+  .then(function(foundPage){
+    console.log(foundPage);
+    res.render("wikipage", {page: foundPage});
+  })
+  .catch(next);
 });
 
 router.get('/users', function(req, res, next){

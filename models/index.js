@@ -25,7 +25,6 @@ var Page = sequelize.define('page', {
   },
   hooks: {
     beforeValidate: function generateUrl (page) {
-      console.log(page.title);
       if (page.title) {
         // Removes all non-alphanumeric characters from title
         // And make whitespace underscore
