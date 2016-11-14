@@ -10,6 +10,8 @@ const path = require('path');
 // const socketio = require('socket.io');
 
 const wikiRouter = require('./routes/wiki');
+const userRouter = require('./routes/users');
+
 const models = require('./models');
 
 const app = express();
@@ -41,6 +43,8 @@ models.User.sync({})
 app.use(express.static(path.join(__dirname, '/public')));
 
 app.use('/wiki', wikiRouter);
+app.use('/users', userRouter);
+
 app.get('/', function(req, res, next){
   res.send('this is the homepage!');
 })
