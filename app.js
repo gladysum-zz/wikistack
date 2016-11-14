@@ -1,16 +1,18 @@
 "use strict";
 
 const express = require("express");
-const app = express();
 const morgan = require("morgan");
-var nunjucks = require('nunjucks');
-var makesRouter = require('./routes');
-var fs = require('fs');
-var path = require('path');
-var mime = require('mime');
-var bodyParser = require('body-parser');
-var socketio = require('socket.io');
-var models = require("./models");
+const nunjucks = require('nunjucks');
+const bodyParser = require('body-parser');
+const path = require('path');
+// const fs = require('fs');
+// const mime = require('mime');
+// const socketio = require('socket.io');
+
+const wikiRouter = require('./routes/wiki');
+const models = require('./models');
+
+const app = express();
 
 // templating boilerplate setup
 app.engine('html', nunjucks.render); // how to render html templates
@@ -24,29 +26,32 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true })); // for HTML form submits
 app.use(bodyParser.json()); // would be for AJAX requests
 
-
 // start the server
-
 models.User.sync({})
 .then(function () {
     return models.Page.sync({})
 })
 .then(function () {
-    server.listen(3001, function () {
-        console.log('Server is listening on port 3001!');
+    app.listen(3000, function () {
+        console.log('Server is listening on port 3000!');
     });
 })
 .catch(console.error);
+
+app.use(express.static(path.join(__dirname, '/public')));
+
+app.use('/wiki', wikiRouter);
+app.get('/', function(req, res, next){
+  res.send('this is the homepage!');
+})
+
+
+// // modular routing that uses io inside it
+// app.get('/', function(req, res, next){
+// 	res.render("index");
+// });
 
 // var server = app.listen(1337, function(){
 //   console.log('listening on port 1337');
 // });
 // var io = socketio.listen(server);
-
-app.use(express.static(path.join(__dirname, '/public')));
-
-// modular routing that uses io inside it
-app.get('/', function(req, res, next){
-	res.render("index");
-});
-
